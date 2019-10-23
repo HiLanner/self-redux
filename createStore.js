@@ -1,4 +1,20 @@
-const createStore = function (initState) {
+
+function redecer(state, action) {
+  switch(action.type) {
+    case 'INCREMENT': 
+      return {
+        count: state.count + 1
+      }
+    case 'DECREMENT':
+      return {
+        count: state.count - 1
+      }
+    default:
+      return state
+  }
+}
+
+const createStore = function (redecer, initState) {
   let state = initState
   let listeners = []
   function subscribe(listener) {
@@ -7,8 +23,8 @@ const createStore = function (initState) {
   function getState() {
     return state
   }
-  function changeState(action) {
-    state = plan(initState, action)
+  function dispatch(action) {
+    state = redecer(state, action)
     for (let i = 0; i < listeners.length; i++) {
       const listener = listeners[i]
       listener()
@@ -18,9 +34,10 @@ const createStore = function (initState) {
   return {
     subscribe,
     getState,
-    changeState
+    dispatch
   }
 }
+
 
 // let initState = {
 //   counter: {
@@ -40,7 +57,7 @@ const createStore = function (initState) {
 
 // store.subscribe(getCounterChange)
 
-// store.changeState({
+// store.dispatch({
 //   counter: {
 //     count: 1
 //   },
@@ -57,33 +74,17 @@ let initState = {
   count: 0
 }
 
-function plan(state, action) {
-  switch(action.type) {
-    case 'INCREMENT': 
-      return {
-        ...state,
-        count: state.count + 1
-      }
-    case 'DECREMENT':
-      return {
-        ...state,
-        count: state.count - 1
-      }
-    default:
-      return state
-  }
-}
 
-let store = createStore(initState)
+let store = createStore(redecer, initState)
 
 store.subscribe(function() {
   console.log(store.getState().count)
 })
 
-store.changeState({
-  count: store.getState().count + 1
-})
+store.dispatch({type: 'INCREMENT'})
 
-store.changeState({
-  count: store.getState().count - 1
-})
+store.dispatch({type: 'INCREMENT'})
+
+store.dispatch({type: 'DECREMENT'})
+
+store.dispatch({type: 'DECREMENT'})
